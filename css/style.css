@@ -1,0 +1,76 @@
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Microsoft JhengHei', sans-serif;
+}
+
+body {
+    position: relative;
+    background: linear-gradient(120deg, #3b0d6d, #5a1f8b, #7b3fbf, #4b1e7a);
+    background-size: 400% 400%;
+    animation: gradientAnimation 25s ease infinite;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.35);
+    z-index: 0;
+}
+
+header {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255,255,255,0.01);
+    border-radius: 0;
+    padding: 1.5rem;
+}
+
+.viz-section {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255,255,255,0.08);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.viz-section:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+}
+
+footer {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: auto;
+    backdrop-filter: blur(8px);
+    background-color: rgba(255,255,255,0.02);
+}
+
+.left-panel {
+    flex: 0 0 30%;
+    min-width: 400px;
+}
+
+.right-panel {
+    flex: 0 0 68.5%;
+    min-width: 200px;
+}
+
+h1, h5, p {
+    color: rgba(255,255,255,0.8);
+    text-shadow: none;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
