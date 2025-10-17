@@ -1,3 +1,30 @@
+// Set time for scroll wheel, gradient calculation, and visualization
+let time = new Date();
+time.setHours(0, 0, 0, 0); // Start at midnight
+
+// Function to increase time by 30 minutes
+function increaseTime30Min(givenTime) {
+    givenTime.setMinutes(time.getMinutes() + 30);
+}
+
+// Function to decrease time by 30 minutes
+function decreaseTime30Min(givenTime) {
+    givenTime.setMinutes(time.getMinutes() - 30);
+}
+
+// Format as 12-hour time with AM/PM for displaying
+function formatTime(date) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Convert 0 to 12
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+
+    return hours + ':' + minutes + ' ' + ampm;
+}
+
 const body = d3.select("body");
 
 const gradients = {
@@ -51,3 +78,61 @@ function updateGradient(newColors) {
     };
     step();
 }
+
+// Slider design
+
+let svg = d3.select("#timeSlider").append("svg")
+    .attr("viewBox", "0 0 300 300");
+
+svg.append("g");
+
+// Define a mask for the cutout effect
+const mask = svg.append("defs")
+    .append("mask")
+    .attr("id", "text-cutout-mask");
+
+mask.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("fill", "white");
+
+// Add the text to the mask and fill it with black to create the cutout
+mask.append("text")
+    .attr("x", 125)
+    .attr("y", 150)
+    .attr("text-anchor", "end")
+    .attr("dominant-baseline", "middle")
+    .attr("class", "timeText")
+    .attr("fill", "black") // Use black to "cut out" the text
+    .text(formatTime(time));
+
+// Add a circle to the SVG
+svg.append("circle")
+    .attr("cx", 0)    // x position (center)
+    .attr("cy", 150)    // y position (center)
+    .attr("r", 150)     // radius
+    .attr("fill", "rgba(255,255,255,0.8)") // color
+    .attr("mask", "url(#text-cutout-mask)"); // Apply the mask
+
+
+let accumulatedDelta = 0;
+
+d3.select("#timeSlider").on("wheel", function(event) {
+    event.preventDefault();// Prevent page scroll
+    accumulatedDelta += event.deltaY;
+    const step = 30; // minutes per scroll
+    if (accumulatedDelta< - step) {
+        increaseTime30Min(time);
+        accumulatedDelta = 0;
+    } else if (accumulatedDelta > step) {
+        decreaseTime30Min(time);
+        accumulatedDelta = 0;
+    }
+    svg.select("text").text(formatTime(time));
+});
+
+// create tick marks
+
+// on scroll change number and rotate tick marks

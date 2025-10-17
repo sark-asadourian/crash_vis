@@ -74,3 +74,15 @@ h1, h5, p {
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
+#timeSlider svg {
+    width: 50vh;
+    height: 50vh; /* Responsive: 20% of viewport height */
+    cursor: ns-resize;
+}
+
+.timeText {
+    font-size: 1.25em;
+    font-family: 'Microsoft JhengHei', sans-serif;
+    color: rgba(255,255,255,0.8);
+}
