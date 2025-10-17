@@ -4,12 +4,12 @@ time.setHours(0, 0, 0, 0); // Start at midnight
 
 // Function to increase time by 30 minutes
 function increaseTime30Min(givenTime) {
-    givenTime.setMinutes(time.getMinutes() + 30);
+    givenTime.setMinutes(givenTime.getMinutes() + 30);
 }
 
 // Function to decrease time by 30 minutes
 function decreaseTime30Min(givenTime) {
-    givenTime.setMinutes(time.getMinutes() - 30);
+    givenTime.setMinutes(givenTime.getMinutes() - 30);
 }
 
 // Format as 12-hour time with AM/PM for displaying
@@ -28,7 +28,7 @@ function formatTime(date) {
 const body = d3.select("body");
 
 const gradients = {
-    morning: ["#FFF7C0", "#FFE8A0", "#ffce85", "#FFF3E0"],
+    morning: ["#FFF7C0", "#ea5525", "#ffe88a", "#ff7858"],
     afternoon: ["#87CEFA", "#ADD8E6", "#e8d87e", "#E0FFFF"],
     evening: ["#e0b92b", "#8342bd", "#531994", "#4b1e7a"],
     night: ["#26267e", "#080870", "#151591", "#1a1a2a"]
@@ -36,23 +36,17 @@ const gradients = {
 
 let currentColors = gradients.evening;
 
-function getGradientByHour(hour) {
-    if(hour >= 6 && hour < 12) return gradients.morning;
-    else if(hour >= 12 && hour < 17) return gradients.afternoon;
-    else if(hour >= 17 && hour < 20) return gradients.evening;
+// work time time
+function getGradientByHour(date) {
+    if(date.getHours() >= 6 && date.getHours() < 12) return gradients.morning;
+    else if(date.getHours() >= 12 && date.getHours() < 17) return gradients.afternoon;
+    else if(date.getHours() >= 17 && date.getHours() < 20) return gradients.evening;
     else return gradients.night;
 }
 
-const timeInput = document.getElementById("timeInput");
-updateGradient(getGradientByHour(parseInt(timeInput.value.split(":")[0])));
+updateGradient(time);
 
 animateGradientShift();
-
-d3.select("#timeInput").on("input", function() {
-    const hour = parseInt(this.value.split(":")[0]);
-    const newColors = getGradientByHour(hour);
-    updateGradient(newColors);
-});
 
 function animateGradientShift() {
     let position = 0;
@@ -130,9 +124,9 @@ d3.select("#timeSlider").on("wheel", function(event) {
         decreaseTime30Min(time);
         accumulatedDelta = 0;
     }
-    svg.select("text").text(formatTime(time));
+
+    const newColors = getGradientByHour(time);
+    updateGradient(newColors);
+
+    mask.select("text").text(formatTime(time));
 });
-
-// create tick marks
-
-// on scroll change number and rotate tick marks
