@@ -1,0 +1,331 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 1s ease;
+    overflow-x: hidden;
+}
+
+#cover {
+    background: linear-gradient(135deg, #000814 0%, #001d3d 100%);
+    color: white;
+    position: relative;
+}
+
+#cover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+#cover .container {
+    position: relative;
+    z-index: 1;
+}
+
+#visualization {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    transition: background-color 1s ease;
+}
+
+#vizContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    padding: 20px;
+}
+
+
+.injury-label {
+    font-size: 14px;
+    font-weight: bold;
+    text-anchor: middle;
+    fill: #333;
+}
+
+.injury-count {
+    font-size: 18px;
+    font-weight: bold;
+    text-anchor: middle;
+    fill: #222;
+}
+
+.time-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-anchor: middle;
+    fill: #333;
+}
+
+.total-count {
+    font-size: 16px;
+    text-anchor: middle;
+    fill: #666;
+}
+
+.d-none {
+    display: none;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid;
+}
+
+/* Updated circle colors */
+.circle-major {
+    fill: #FFB6C1;
+    stroke: #FF91A4;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.circle-minor {
+    fill: #98FB98;
+    stroke: #7CFC7C;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.circle-fatal {
+    fill: #aaa1e6;
+    stroke: #D8BFD8;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.circle-none {
+    fill: #87CEEB;
+    stroke: #6495ED;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+/* Update legend  */
+.legend-major {
+    background-color: #FFB6C1;
+    border-color: #FF91A4;
+}
+
+.legend-minor {
+    background-color: #98FB98;
+    border-color: #7CFC7C;
+}
+
+.legend-fatal {
+    background-color: #aaa1e6;
+    border-color: #D8BFD8;
+}
+
+.legend-none {
+    background-color: #87CEEB;
+    border-color: #6495ED;
+}
+
+#timeDisplay {
+    font-size: 18px;
+    color: #333;
+    margin-top: 10px;
+}
+
+.form-range {
+    height: 10px;
+}
+
+.form-range::-webkit-slider-thumb {
+    background: #007bff;
+}
+
+.form-range::-moz-range-thumb {
+    background: #007bff;
+}
+
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+#visualization #timeDisplay {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+#timeDisplay {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+.time-legend {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.time-legend .legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+#vizContainer, .circle-major, .circle-minor, .circle-fatal, .circle-none {
+    transition: all 0.5s ease;
+}
+
+#continuousTimeSlider {
+    background: linear-gradient(to right, #000814, #ff9100, #88ff00, #FF6B00, #000814);
+}
+
+#continuousTimeSlider::-webkit-slider-thumb {
+    background: #fff;
+    border: 2px solid #333;
+    width: 20px;
+    height: 20px;
+}
+
+#continuousTimeSlider::-moz-range-thumb {
+    background: #fff;
+    border: 2px solid #333;
+    width: 20px;
+    height: 20px;
+}
+
+#visualization .form-label,
+#visualization .text-center,
+#visualization .text-muted {
+    transition: color 0.5s ease;
+}
+
+
+/* circle layout */
+.injury-circle {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.circle-count {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.circle-percentage {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.95);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    pointer-events: none;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s;
+    max-width: 300px;
+    line-height: 1.5;
+}
+
+.tooltip.show {
+    opacity: 1;
+}
+
+.tooltip strong {
+    color: #FFD700;
+    font-weight: 600;
+}
+
+.tooltip br {
+    margin-bottom: 4px;
+}
+
+
+.circle-major:hover, .circle-minor:hover, .circle-fatal:hover, .circle-none:hover {
+    stroke-width: 4;
+    filter: brightness(1.1);
+}
+
+
+.time-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-anchor: middle;
+    fill: #333;
+}
+
+
+.total-count {
+    font-size: 24px;
+    font-weight: bold;
+    fill: #000000;
+    text-anchor: middle;
+}
+
+.injury-circle {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.circle-count {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.circle-percentage {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+
+#visualization .container-fluid {
+    background: transparent;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #vizContainer {
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    .injury-circle {
+        transform: scale(0.9);
+    }
+}
