@@ -3,51 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>idk</title>
-    <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300,400italic,700' rel='stylesheet'
-          type='text/css'>
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-            crossorigin="anonymous">
+    <title>Vehicle Accident Visualization</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body>
+<!-- Cover Page -->
+<section id="cover" class="d-flex flex-column justify-content-center align-items-center vh-100 text-center">
+    <div class="container">
+        <h1 class="display-4 mb-4">How many people are dying every 30 minutes in a car accident?</h1>
+        <p class="lead mb-4">Explore injury patterns across continuous time progression</p>
+        <button id="nextBtn" class="btn btn-primary btn-lg mt-4">Explore Data</button>
+    </div>
+</section>
 
-<header class="py-4 text-center">
-    <h1 class="fw-bold mb-2">Visualization Title</h1>
-    <p class="fs-5 mb-0">
-        A short description that explains the insight behind the visualization.
-    </p>
-</header>
-
-<main class="flex-fill my-4">
-    <div class="container-fluid">
-        <div class="d-flex gap-4">
-
-            <div class="viz-section left-panel">
-                <h5 class="mb-3">Left Panel </h5>
-                <p>Use this for time filter</p>
-                <input type="time" id="timeInput" value="18:00" />
-
+<!-- Visualization Page -->
+<section id="visualization" class="d-none">
+    <div class="container-fluid p-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="text-center">Injury Types by Time of Collision</h2>
+                <p class="text-center text-muted">Watch how accident patterns change throughout the day</p>
             </div>
+        </div>
 
-            <div class="viz-section right-panel">
-                <h5 class="mb-3">Right Panel </h5>
-                <p>Use this for main visualization or content</p>
+        <!-- Filter Controls -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <label for="vehicleFilter" class="form-label">Filter by Vehicle Type:</label>
+                <select id="vehicleFilter" class="form-select">
+                    <option value="All">All Vehicles</option>
+                    <option value="Automobile">Automobile</option>
+                    <option value="Motorcycle">Motorcycle</option>
+                    <option value="Truck">Truck</option>
+                    <option value="Transit or City Vehicle">Transit or City Vehicle</option>
+                    <option value="Bicycle">Bicycle</option>
+                </select>
             </div>
+            <div class="col-md-4">
+                <label for="timeSlider" class="form-label">Time Buckets:</label>
+                <input type="range" class="form-range" id="timeSlider" min="0" max="47" value="0">
+                <div id="timeDisplay"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="continuousTimeSlider" class="form-label">Continuous Time (24-hour):</label>
+                <input type="range" class="form-range" id="continuousTimeSlider" min="0" max="24" step="0.1" value="0">
+                <div id="continuousTimeDisplay" class="text-center fw-bold"></div>
+            </div>
+        </div>
 
+        <!-- Visualization Container -->
+        <div class="row">
+            <div class="col-12">
+                <div id="vizContainer"></div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <button id="prevBtn" class="btn btn-secondary me-2">Previous Bucket</button>
+                <button id="playBtn" class="btn btn-success me-2">Play Continuous</button>
+                <button id="nextBtnViz" class="btn btn-primary">Next Bucket</button>
+            </div>
         </div>
     </div>
-</main>
+</section>
 
-<footer class="py-3 text-center mt-auto">
-    <small>Created by ... • 2025 • CSC316 - Data Visualization Project </small>
-</footer>
+<!-- Tooltip -->
+<div id="tooltip" class="tooltip"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="https://d3js.org/d3.v7.min.js"></script><script src="js/main.js">
-</script>
+<script src="js/main.js"></script>
 </body>
 </html>
