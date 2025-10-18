@@ -463,7 +463,6 @@ function updateBackgroundColor() {
 function updateTimeDisplay() {
     const currentBucket = timeBuckets[currentTimeIndex];
     const continuousTime = timeBucketToContinuous(currentBucket);
-    const formattedTime = formatContinuousTime(continuousTime);
 
     document.getElementById('timeDisplay').textContent =
         `Time Bucket: ${currentBucket}`;
