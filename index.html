@@ -3,49 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>idk</title>
-    <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300,400italic,700' rel='stylesheet'
-          type='text/css'>
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-            crossorigin="anonymous">
+    <title>Accident Injury Visualization</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300,400italic,700' rel='stylesheet' type='text/css'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
 
 <header class="py-4 text-center">
-    <h1 class="fw-bold mb-2">Visualization Title</h1>
+    <h1 class="fw-bold mb-2">Accident Injury Analysis</h1>
     <p class="fs-5 mb-0">
-        A short description that explains the insight behind the visualization.
+        Visualizing accident injuries by time of day from 2006 to 2023 in Toronto
     </p>
 </header>
 
 <main class="flex-fill my-4">
     <div class="container-fluid">
         <div class="d-flex gap-4">
-
+            <!-- Left Panel - Time Control -->
             <div class="viz-section left-panel">
-                <h5 class="mb-3">Scroll to Change Time </h5>
+                <h5 class="mb-3">Time Control</h5>
                 <div class="align-self-center" id="timeSlider"></div>
+                <div id="timeDisplay" class="mt-3 text-white">
+                    <p>Time Period: <span id="timePeriodDisplay">Night</span></p>
+                </div>
             </div>
 
+            <!-- Right Panel - Data Visualization -->
             <div class="viz-section right-panel">
-                <h5 class="mb-3">Right Panel </h5>
-                <p>Use this for main visualization or content</p>
+                <h5 class="mb-3">Injury Distribution</h5>
+                <div id="vizContainer" class="d-flex justify-content-center align-items-center">
+                </div>
             </div>
-
         </div>
     </div>
 </main>
 
 <footer class="py-3 text-center mt-auto">
-    <small>Created by ... • 2025 • CSC316 - Data Visualization Project </small>
+    <small>Created with D3.js • 2025 • Accident Data Visualization</small>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="https://d3js.org/d3.v7.min.js"></script><script src="js/main.js">
-</script>
+<!-- Tooltip -->
+<div id="tooltip" class="tooltip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

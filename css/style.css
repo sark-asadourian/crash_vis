@@ -1,11 +1,10 @@
+
+
 body {
     height: 100%;
     margin: 0;
     overflow: hidden;
-    font-family: 'Microsoft JhengHei', sans-serif;
-}
-
-body {
+    font-family: 'Roboto', sans-serif;
     position: relative;
     background: linear-gradient(120deg, #3b0d6d, #5a1f8b, #7b3fbf, #4b1e7a);
     background-size: 400% 400%;
@@ -58,25 +57,122 @@ footer {
     min-width: 200px;
 }
 
-h1, h5, p {
+h1, h5, h6, p {
     color: rgba(255,255,255,0.8);
     text-shadow: none;
 }
 
 @keyframes gradientAnimation {
-    0% { background-position: 0% 50%; }
+    0% { background-position: 0 50% }
     50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    100% { background-position: 0 50%; }
 }
 
 #timeSlider svg {
     width: 50vh;
-    height: 50vh; /* Responsive: 20% of viewport height */
+    height: 50vh;
     cursor: ns-resize;
 }
 
 .timeText {
     font-size: 1.25em;
-    font-family: 'Microsoft JhengHei', sans-serif;
+    font-family: 'Roboto', sans-serif;
     color: rgba(255,255,255,0.8);
+}
+
+#vizContainer {
+    min-height: 300px;
+    position: relative;
+}
+
+.circle-major {
+    fill: #FFB6C1;
+}
+
+.circle-minor {
+    fill: #98FB98;
+}
+
+.circle-fatal {
+    fill: #aaa1e6;
+}
+
+.circle-none {
+    fill: #95E1D3;
+}
+
+.circle-label {
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    text-anchor: middle;
+    pointer-events: none;
+    fill: #333;
+}
+
+.circle-count {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.circle-type {
+    font-size: 0.9em;
+}
+
+.total-display {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: rgba(255,255,255,0.9);
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-weight: bold;
+    padding: 10px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 5px;
+}
+
+
+.injury-circle circle {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    transform-origin: center;
+}
+
+
+.injury-circle {
+    cursor: pointer;
+    position: relative;
+}
+
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.95);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    pointer-events: none;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s;
+    max-width: 300px;
+    line-height: 1.5;
+}
+
+.tooltip.show {
+    opacity: 1;
+}
+
+.tooltip strong {
+    color: #FFD700;
+    font-weight: 600;
+}
+
+.tooltip br {
+    margin-bottom: 4px;
 }
