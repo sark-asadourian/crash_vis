@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTimeDisplay();
         updateVisualization();
 
+
         // Set up event listeners
         setupEventListeners();
 
@@ -62,6 +63,13 @@ document.addEventListener('DOMContentLoaded', function() {
             '<div class="error-message">Error loading dataset.csv. Please check if the file exists in the data folder.</div>';
     }); //error checking
 });
+
+function setupEventListeners() {
+    document.getElementById('vehicleFilter').addEventListener('change', function() {
+        updateVisualization();
+    });
+}
+
 
 // convert time string to minutes for sorting
 function timeToMinutes(timeStr) {
@@ -189,7 +197,7 @@ function initTimeSlider() {
         .attr("height", "100%")
         .attr("fill", "white");
 
-    // Add the text to the mask
+    // add the text to the mask
     mask.append("text")
         .attr("x", 125)
         .attr("y", 150)
@@ -266,20 +274,6 @@ function initTimeSlider() {
     });
 }
 
-// initialize visualization
-function initVisualization() {
-    const container = d3.select("#vizContainer");
-    container.html(""); // Clear loading message
-
-    // Set dimensions
-    width = Math.min(600, window.innerWidth - 100);
-    height = 300;
-
-    // Create SVG
-    svg = container.append("svg")
-        .attr("width", width)
-        .attr("height", height);
-}
 
 // get top vehicle types and roads for a specific injury type
 function getTopVehicleAndRoad(data, injuryType) {
@@ -328,21 +322,47 @@ function getTopVehicleAndRoad(data, injuryType) {
     };
 }
 
-// update visualization based on current time
+// initialize visualization
+function initVisualization() {
+    const container = d3.select("#vizContainer");
+    container.html("");
+
+    width = Math.min(900, window.innerWidth - 50);
+    height = 400;
+
+    // Create SVG
+    svg = container.append("svg")
+        .attr("width", width)
+        .attr("height", height);
+}
+
+// update visualization based on current time and vehicle filter
 function updateVisualization() {
     if (!globalData.length) return;
 
     const currentTimeBucket = timeBuckets[currentTimeIndex];
+    const selectedVehicle = document.getElementById('vehicleFilter').value;
 
-    // Filter data for current time bucket and remove empty injury values
+    // Filter data for current time bucket
     let filteredData = globalData.filter(d =>
-        d['Time of Collision BUCKET'] === currentTimeBucket &&
+        d['Time of Collision BUCKET'] === currentTimeBucket
+    );
+
+    // Apply vehicle filter if not "All"
+    if (selectedVehicle !== 'All') {
+        filteredData = filteredData.filter(d =>
+            d['Vehicle Type'] && d['Vehicle Type'].includes(selectedVehicle)
+        );
+    }
+
+    // Filter data for injuries and remove empty injury values
+    let filteredInjury = filteredData.filter(d =>
         d.Injury && d.Injury.trim() !== ''
     );
 
-    // Count injuries by type
+    // count injuries by type from the filtered data
     const injuryCounts = d3.rollup(
-        filteredData,
+        filteredInjury,
         v => v.length,
         d => d.Injury
     );
@@ -351,9 +371,15 @@ function updateVisualization() {
     const categories = ['Major', 'Minor', 'Fatal', 'None'];
     const circleData = categories.map(cat => {
         const vehicleRoadInfo = getTopVehicleAndRoad(filteredData, cat);
+
+        // Divide the value by 6205 to for averaging across the years
+        const originalValue = injuryCounts.get(cat) || 0;
+        const scaledValue = originalValue / 6205;
+
         return {
             type: cat,
-            value: injuryCounts.get(cat) || 0,
+            value: scaledValue,
+            originalValue: originalValue,
             color: injuryColors[cat],
             topVehicle: vehicleRoadInfo.topVehicle,
             topVehicleCount: vehicleRoadInfo.topVehicleCount,
@@ -361,7 +387,7 @@ function updateVisualization() {
             topRoadCount: vehicleRoadInfo.topRoadCount,
             totalInjuries: vehicleRoadInfo.totalInjuries
         };
-    }).filter(d => d.value > 0); // Only show circles for injury types with data
+    }).filter(d => d.originalValue > 0);
 
     // clear previous visualization
     svg.selectAll("*").remove();
@@ -373,59 +399,75 @@ function updateVisualization() {
             .attr("text-anchor", "middle")
             .style("fill", "white")
             .style("font-size", "16px")
-            .text("No injury data for this time period");
+            .text("No injury data for this time period and vehicle type");
         return;
     }
 
-    // Calculate total for percentages
-    const total = circleData.reduce((sum, d) => sum + d.value, 0);
+    // Calculate total for percentages (using original values)
+    const totalOriginal = circleData.reduce((sum, d) => sum + d.originalValue, 0);
 
-    // Set up scales - smaller radius to prevent overlap
     const maxValue = d3.max(circleData, d => d.value) || 1;
-    const radiusScale = d3.scaleSqrt()
+
+    const radiusScale = d3.scalePow()
+        .exponent(1.3)
         .domain([0, maxValue])
-        .range([25, 60]); // Reduced max radius
+        .range([35, 80]);
 
-    // Calculate circle positions with proper spacing
-    const totalCircles = circleData.length;
-    const maxRadius = 60;
-    const minSpacing = maxRadius * 2.5; // Increased spacing between circles
+    const sortedCircles = [...circleData].sort((a, b) => b.value - a.value);
 
-    // Calculate total width needed
-    const totalWidthNeeded = (totalCircles - 1) * minSpacing + (maxRadius * 2);
+    const circlePositions = [];
+    const verticalCenter = height / 2;
 
-    // Start position to center the circles
-    let startX = (width - totalWidthNeeded) / 2 + maxRadius;
+    const maxRadius = 120; // Reduced from 90
+    const horizontalSpacing = maxRadius * 1.5; // Reduced spacing
+    const verticalSpacing = maxRadius * 1.3;
+
+    const circlesPerRow = Math.min(sortedCircles.length, Math.floor(width / horizontalSpacing));
+
+    sortedCircles.forEach((circle, index) => {
+        const row = Math.floor(index / circlesPerRow);
+        const col = index % circlesPerRow;
+
+        const x = (col * horizontalSpacing) + maxRadius + 30; // Reduced padding
+        const y = verticalCenter + (row * verticalSpacing) - ((Math.ceil(sortedCircles.length / circlesPerRow) - 1) * verticalSpacing / 2);
+
+        circlePositions.push({
+            ...circle,
+            x: x,
+            y: y,
+            radius: radiusScale(circle.value)
+        });
+    });
 
     const circles = svg.selectAll(".injury-circle")
-        .data(circleData)
+        .data(circlePositions)
         .enter()
         .append("g")
         .attr("class", "injury-circle")
-        .attr("transform", (d, i) => {
-            const x = startX + (i * minSpacing);
-            return `translate(${x}, ${height / 2})`;
-        });
+        .attr("transform", d => `translate(${d.x}, ${d.y})`);
 
-    // draw circles with enhanced hover effects
     circles.append("circle")
-        .attr("r", d => radiusScale(d.value))
+        .attr("r", d => d.radius)
+        .attr("fill", d => d.color)
         .attr("class", d => `circle-${d.type.toLowerCase()}`)
         .attr("stroke", "#fff")
-        .attr("stroke-width", 2)
+        .attr("stroke-width", 1.5)
+        .style("filter", "drop-shadow(0 1px 3px rgba(0,0,0,0.2))") // Lighter shadow
         .on("mouseover", function(event, d) {
             // Show enhanced tooltip with vehicle and road information
             const tooltip = document.getElementById('tooltip');
-            const percentage = ((d.value / total) * 100).toFixed(1);
+            const percentage = ((d.originalValue / totalOriginal) * 100).toFixed(1);
+            const scaledPercentage = (d.value * 100).toFixed(2);
 
             let tooltipContent = `
             <strong>${d.type} Injury</strong><br>
-            Total Count: ${d.value} (${percentage}%)<br><br>
+            Actual Count: ${d.originalValue} (${percentage}% of current time)<br>
+            Scaled Value: ${d.value.toFixed(4)} (${scaledPercentage}%)<br><br>
         `;
 
             // Add vehicle information if available
             if (d.topVehicle && d.topVehicle !== 'Unknown' && d.topVehicleCount > 0) {
-                const vehiclePercentage = ((d.topVehicleCount / d.value) * 100).toFixed(1);
+                const vehiclePercentage = ((d.topVehicleCount / d.originalValue) * 100).toFixed(1);
                 tooltipContent += `
                 <strong>Most Common Vehicle:</strong><br>
                 ${d.topVehicle}<br>
@@ -433,9 +475,8 @@ function updateVisualization() {
             `;
             }
 
-            // add road information if available
             if (d.topRoad && d.topRoad !== 'Unknown' && d.topRoadCount > 0) {
-                const roadPercentage = ((d.topRoadCount / d.value) * 100).toFixed(1);
+                const roadPercentage = ((d.topRoadCount / d.originalValue) * 100).toFixed(1);
                 tooltipContent += `
                 <strong>Most Common Road:</strong><br>
                 ${d.topRoad}<br>
@@ -446,16 +487,14 @@ function updateVisualization() {
             tooltip.innerHTML = tooltipContent;
             tooltip.classList.add('show');
 
-            // highlight circle on hover with size increase
-            const originalRadius = radiusScale(d.value);
-            const hoverRadius = originalRadius * 1.2; // 20% larger
+            const hoverRadius = d.radius * 1.1;
 
             d3.select(this)
                 .transition()
-                .duration(300)
+                .duration(200)
                 .attr("r", hoverRadius)
-                .attr("stroke-width", 4)
-                .style("filter", "brightness(1.2) drop-shadow(0 0 8px rgba(255,255,255,0.5))");
+                .attr("stroke-width", 2)
+                .style("filter", "brightness(1.15) drop-shadow(0 3px 6px rgba(255,255,255,0.3))");
         })
         .on("mousemove", function(event) {
             const tooltip = document.getElementById('tooltip');
@@ -465,38 +504,55 @@ function updateVisualization() {
         .on("mouseout", function(event, d) {
             document.getElementById('tooltip').classList.remove('show');
 
-            // reset circle appearance and size
-            const originalRadius = radiusScale(d.value);
-
             d3.select(this)
                 .transition()
-                .duration(300)
-                .attr("r", originalRadius)
-                .attr("stroke-width", 2)
-                .style("filter", "brightness(1)");
+                .duration(200)
+                .attr("r", d.radius)
+                .attr("stroke-width", 1.5)
+                .style("filter", "drop-shadow(0 1px 3px rgba(0,0,0,0.2))");
         });
 
-    // add labels inside circles
     circles.append("text")
         .attr("class", "circle-label circle-count")
-        .attr("y", -5)
+        .attr("y", -10)
         .style("fill", "#333")
         .style("font-weight", "bold")
-        .style("font-size", "14px")
-        .text(d => d.value);
+        .style("font-size", "12px")
+        .style("text-anchor", "middle")
+        .style("pointer-events", "none")
+        .text(d => d.value.toFixed(4));
 
     circles.append("text")
         .attr("class", "circle-label circle-type")
-        .attr("y", 15)
+        .attr("y", 6)
         .style("fill", "#333")
-        .style("font-size", "12px")
+        .style("font-size", "11px")
+        .style("text-anchor", "middle")
+        .style("font-weight", "bold")
+        .style("pointer-events", "none")
         .text(d => d.type);
+
+    circles.append("text")
+        .attr("class", "circle-label circle-percentage")
+        .attr("y", 22)
+        .style("fill", "#333")
+        .style("font-size", "9px")
+        .style("text-anchor", "middle")
+        .style("pointer-events", "none")
+        .text(d => `${(d.value * 100).toFixed(2)}%`);
+
+    let totalText = `Total Actual: ${totalOriginal}`;
+    if (selectedVehicle !== 'All') {
+        totalText += ` (${selectedVehicle} only)`;
+    }
 
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", 30)
         .attr("text-anchor", "middle")
         .attr("class", "total-display")
-        .text(`Total: ${total}`);
-
+        .style("fill", "white")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
+        .text(totalText);
 }

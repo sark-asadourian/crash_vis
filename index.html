@@ -29,13 +29,26 @@
                 </div>
             </div>
 
-            <!-- Right Panel - Data Visualization -->
+            <!-- In the right panel section -->
             <div class="viz-section right-panel">
-                <h5 class="mb-3">Injury Distribution</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Average Injury Distribution Over the Years</h5>
+                    <div>
+                        <label for="vehicleFilter" class="form-label me-2 mb-0">Filter by Vehicle:</label>
+                        <select id="vehicleFilter" class="form-select form-select-sm d-inline-block w-auto">
+                            <option value="All">All Vehicles</option>
+                            <option value="Automobile">Automobile</option>
+                            <option value="Motorcycle">Motorcycle</option>
+                            <option value="Truck">Truck</option>
+                            <option value="Transit">Transit or City Vehicle</option>
+                            <option value="Bicycle">Bicycle</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="vizContainer" class="d-flex justify-content-center align-items-center">
+                </div>
             </div>
         </div>
-    </div>
     </div>
 </main>
 
@@ -51,3 +64,5 @@
 <script src="js/main.js"></script>
 </body>
 </html>
+
+
