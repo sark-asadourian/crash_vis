@@ -1,3 +1,5 @@
+import { ScrollClock } from './scrollClock.js';
+
 // Global variables
 let globalData = [];
 let timeBuckets = [];
@@ -185,7 +187,6 @@ function initTimeSlider() {
 
     svg.append("g");
 
-    // Define a mask for the cutout effect
     const mask = svg.append("defs")
         .append("mask")
         .attr("id", "text-cutout-mask");
@@ -197,7 +198,6 @@ function initTimeSlider() {
         .attr("height", "100%")
         .attr("fill", "white");
 
-    // add the text to the mask
     mask.append("text")
         .attr("x", 125)
         .attr("y", 150)
@@ -207,7 +207,6 @@ function initTimeSlider() {
         .attr("fill", "black")
         .text(formatTime(time));
 
-    // add a circle to the SVG
     svg.append("circle")
         .attr("cx", 0)
         .attr("cy", 150)
@@ -215,63 +214,25 @@ function initTimeSlider() {
         .attr("fill", "rgba(255,255,255,0.8)")
         .attr("mask", "url(#text-cutout-mask)");
 
-    let accumulatedDelta = 0;
-
-    d3.select("#timeSlider").on("wheel", function(event) {
-        event.preventDefault();
-        accumulatedDelta += event.deltaY;
-        const step = 30;
-
-        if (accumulatedDelta < -step) {
-            // move forward in time
-            increaseTime30Min(time);
-            accumulatedDelta = 0;
-
-            // find the next available time bucket
-            const currentMinutes = time.getHours() * 60 + time.getMinutes();
-            let newIndex = currentTimeIndex;
-
-            for (let i = currentTimeIndex + 1; i < timeBuckets.length; i++) {
-                const bucketMinutes = timeToMinutes(timeBuckets[i]);
-                if (bucketMinutes >= currentMinutes) {
-                    newIndex = i;
-                    break;
-                }
-            }
-
-            if (newIndex !== currentTimeIndex && newIndex < timeBuckets.length) {
-                currentTimeIndex = newIndex;
-            }
-
-        } else if (accumulatedDelta > step) {
-            // move backward in time
-            decreaseTime30Min(time);
-            accumulatedDelta = 0;
-
-            // Find the previous available time bucket
-            const currentMinutes = time.getHours() * 60 + time.getMinutes();
-            let newIndex = currentTimeIndex;
-
-            for (let i = currentTimeIndex - 1; i >= 0; i--) {
-                const bucketMinutes = timeToMinutes(timeBuckets[i]);
-                if (bucketMinutes <= currentMinutes) {
-                    newIndex = i;
-                    break;
-                }
-            }
-
-            if (newIndex !== currentTimeIndex && newIndex >= 0) {
-                currentTimeIndex = newIndex;
-            }
+    const scrollClock = new ScrollClock(
+        "#timeSlider",
+        "#text-cutout-mask text",
+        time,
+        timeBuckets,
+        {
+            currentTimeIndex,
+            updateGradient,
+            updateTimeDisplay,
+            updateVisualization,
+            increaseTime30Min,
+            decreaseTime30Min,
+            timeToMinutes,
+            getGradientByHour,
+            formatTime
         }
+    );
 
-        const newColors = getGradientByHour(time);
-        updateGradient(newColors);
-        updateTimeDisplay();
-        updateVisualization();
-
-        mask.select("text").text(formatTime(time));
-    });
+    scrollClock.init();
 }
 
 
