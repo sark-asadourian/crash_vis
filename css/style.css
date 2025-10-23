@@ -79,12 +79,24 @@ h1, h5, h6, p {
     font-family: 'Roboto', sans-serif;
     color: rgba(255,255,255,0.8);
 }
-
-#vizContainer {
-    min-height: 300px;
-    position: relative;
+main{
+flex: 1;
+overflow: hidden;
 }
 
+.container-fluid > .d-flex {
+    align-items: center;
+    justify-content: space-between;
+    height: 80vh;
+    overflow: hidden;
+}
+
+.viz-section {
+    overflow-y: hidden;
+    max-height: 80vh;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+}
 .circle-major {
     fill: #FFB6C1;
 }
