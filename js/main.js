@@ -1,4 +1,6 @@
 import { ScrollClock } from './scrollClock.js';
+import { YearScroll } from './ScrollYear.js';
+
 
 // Global variables
 let globalData = [];
@@ -179,6 +181,13 @@ function updateGradient(newColors) {
     };
     step();
 }
+const yearScroll = new YearScroll('#yearSlider', {
+    onYearChange: (year) => {
+        console.log('Selected year:', year);
+        // later update visualization
+    }
+});
+yearScroll.init();
 
 // initialize the time slider
 function initTimeSlider() {
